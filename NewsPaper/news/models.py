@@ -40,7 +40,7 @@ class Post(models.Model):
         self.rating -= 1
 
     def preview(self):
-        return self['content'][:124] + '...'
+        return self.content[:124] + '...'
 
 
 class PostCategory(models.Model):

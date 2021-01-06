@@ -1,0 +1,73 @@
+from news.models import User
+usr1 = User.objects.create_user(username='Masha123')
+usr2 = User.objects.create_user(username='super_Vasya')
+
+from news.models import Author
+ath1 = Author.objects.create(user = usr1)
+ath2 = Author.objects.create(user = usr2)
+
+from news.models import Category
+cat1 = Category.objects.create(name='Спорт')
+cat2 = Category.objects.create(name='Политика')
+cat3 = Category.objects.create(name='Театр')
+cat4 = Category.objects.create(name='IT')
+
+from news.models import Post
+from news.models import PostCategory
+
+post1 = Post.objects.create(author = ath1, type='art', title='Театры города N', content='Тут должно быть много текста, очень много текста, свыше 124 символов, чтобы посмотреть, как будет работать метод preview(). Ещё немного текста. И ещё немного. И ещё чуть-чуть. Надеюсь, этого хватит.')
+
+post2 = Post.objects.create(author = ath2, type='art', title='Мои любимые команды', content='Тут должно быть много текста, очень много текста, свыше 124 символов, чтобы посмотреть, как будет работать метод preview(). Ещё немного текста. И ещё немного. И ещё чуть-чуть. Надеюсь, этого хватит.')
+
+post3 = Post.objects.create(author = ath1, type='new', title='Новый закон о хранении информации', content='Тут должно быть много текста, очень много текста, свыше 124 символов, чтобы посмотреть, как будет работать метод preview(). Ещё немного текста. И ещё немного. И ещё чуть-чуть. Надеюсь, этого хватит.')
+
+post1.categories.add(cat3)
+post2.categories.add(cat1)
+post3.categories.add(cat2)
+post3.categories.add(cat4)
+
+from news.models import Comment
+com1 = Comment.objects.create(post = post1, user = usr2, content='Я первый!')
+com2 = Comment.objects.create(post = post2, user = usr1, content='Я первая!')
+com3 = Comment.objects.create(post = post3, user = usr2, content='Я ничего не понял...')
+com4 = Comment.objects.create(post = post3, user = usr1, content='Ответ Васе: Попробуй перечитать ещё раз, это очень важно!')
+
+post1.like()
+post1.like()
+post1.like()
+post2.like()
+post2.like()
+post3.like()
+post3.like()
+post3.like()
+post3.like()
+post3.like()
+post3.like()
+
+com1.dislike()
+com1.dislike()
+com2.dislike()
+com3.like()
+com4.like()
+com4.like()
+com4.like()
+com4.like()
+
+ath1.update_rating()
+ath2.update_rating()
+
+Author.objects.order_by('-rating').values('user__username', 'rating')[0]
+
+tmp_post = Post.objects.order_by('-rating').values('created', 'author__user__username', 'rating', 'title', 'content')[0]
+
+tmp_post['created'] = tmp_post['created'].strftime('%A, %d. %B %Y %I:%M %p')
+
+tmp_post['content'] = tmp_post['content'][:124] + '...'
+
+tmp_post
+
+tmp_comms = list(Comment.objects.filter(post=Post.objects.order_by('-rating')[0]).values('created', 'user__username', 'rating', 'content'))
+
+for e in range(2): tmp_comms[e]['created'] = tmp_comms[e]['created'].strftime('%A, %d. %B %Y %I:%M %p')
+
+tmp_comms
