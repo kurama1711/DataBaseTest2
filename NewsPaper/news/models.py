@@ -14,9 +14,15 @@ class Author(models.Model):
 
         self.rating = posts_total + comments_total
 
+    def __str__(self):
+        return f'{self.user.username}'
+
 
 class Category(models.Model):
     name = models.CharField(max_length=64, unique=True)
+
+    def __str__(self):
+        return f'{self.name}'
 
 
 class Post(models.Model):
@@ -33,6 +39,8 @@ class Post(models.Model):
     content = models.TextField()
     rating = models.IntegerField(default=0)
 
+    related_name = 'news'
+
     def like(self):
         self.rating += 1
 
@@ -41,6 +49,9 @@ class Post(models.Model):
 
     def preview(self):
         return self.content[:124] + '...'
+
+    def __str__(self):
+        return f'{self.title}: {self.content}'
 
 
 class PostCategory(models.Model):
@@ -60,3 +71,6 @@ class Comment(models.Model):
 
     def dislike(self):
         self.rating -= 1
+
+    def __str__(self):
+        return f'FROM <{self.user.username}> TO <{self.post.title}>: {self.content[:10]} ...'
